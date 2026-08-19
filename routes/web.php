@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PeriodClosureController;
+use App\Models\Transaction;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 Route::get('/', function () {
     return auth()->check()
@@ -13,8 +16,29 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia\Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    $transactions = Transaction::where('user_id', Auth::id())->get();
+
+    $totalReceber = $transactions
+        ->where('type', 'receber')
+        ->where('status', '!=', 'quitado')
+        ->sum('amount');
+
+    $totalPagar = $transactions
+        ->where('type', 'pagar')
+        ->where('status', '!=', 'quitado')
+        ->sum('amount');
+
+    $emAtraso = $transactions
+        ->where('status', 'em atraso')
+        ->count();
+
+    return Inertia::render('Dashboard', [
+        'totalReceber' => $totalReceber,
+        'totalPagar' => $totalPagar,
+        'saldoPrevisto' => $totalReceber - $totalPagar,
+        'emAtraso' => $emAtraso,
+    ]);
+})->middleware(['auth'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
