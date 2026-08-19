@@ -30,10 +30,17 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 COPY . .
 
-RUN composer install \
-    --no-interaction \
-    --prefer-dist \
-    --optimize-autoloader
+ENV COMPOSER_MAX_PARALLEL_HTTP=4
+
+RUN for i in 1 2 3; do \
+        composer install \
+            --no-interaction \
+            --prefer-dist \
+            --optimize-autoloader \
+            --no-progress && break; \
+        echo "Composer falhou na tentativa $i. Tentando novamente..."; \
+        sleep 5; \
+    done && test -f vendor/autoload.php
 
 COPY --from=frontend /app/public/build ./public/build
 
