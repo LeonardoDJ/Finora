@@ -19,17 +19,17 @@ Route::get('/dashboard', function () {
     $transactions = Transaction::where('user_id', Auth::id())->get();
 
     $totalReceber = $transactions
-        ->where('type', 'receber')
-        ->where('status', '!=', 'quitado')
-        ->sum('amount');
+    ->where('type', 'receive')
+    ->where('status', '!=', 'paid_off')
+    ->sum('amount');
 
     $totalPagar = $transactions
-        ->where('type', 'pagar')
-        ->where('status', '!=', 'quitado')
+        ->where('type', 'pay')
+        ->where('status', '!=', 'paid_off')
         ->sum('amount');
 
     $emAtraso = $transactions
-        ->where('status', 'em atraso')
+        ->where('status', 'delay')
         ->count();
 
     return Inertia::render('Dashboard', [
