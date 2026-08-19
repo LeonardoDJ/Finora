@@ -1,15 +1,44 @@
 services:
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: finora-migrate
+
+    environment:
+      APP_ENV: local
+      APP_KEY: ${APP_KEY}
+
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: finora
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+
+      CACHE_STORE: database
+      SESSION_DRIVER: database
+      QUEUE_CONNECTION: database
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    command: php artisan migrate --force
+
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: finora-app
+
     ports:
       - "8000:8000"
+
     environment:
       APP_NAME: Finora
       APP_ENV: local
-      APP_KEY: "base64:cicwMqd3A02evWhNoHY0ggKPPwpx3Pfh6D51GvuF3G"
+      APP_KEY: ${APP_KEY}
       APP_DEBUG: "true"
       APP_URL: http://localhost:8000
 
@@ -20,6 +49,8 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
 
+      CACHE_STORE: database
+      SESSION_DRIVER: database
       QUEUE_CONNECTION: database
 
       MAIL_MAILER: smtp
@@ -30,41 +61,56 @@ services:
       MAIL_ENCRYPTION: ""
       MAIL_FROM_ADDRESS: finora@example.com
       MAIL_FROM_NAME: Finora
+
     depends_on:
       postgres:
         condition: service_healthy
       mailpit:
         condition: service_started
-    command: >
-      sh -c "php artisan migrate --force &&
-             php artisan serve --host=0.0.0.0 --port=8000"
+      migrate:
+        condition: service_completed_successfully
+
+    command: php artisan serve --host=0.0.0.0 --port=8000
 
   worker:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: finora-worker
+
     environment:
       APP_ENV: local
-      APP_KEY: "base64:cicwMqd3A02evWhNoHY0ggKPPwpx3Pfh6D51GvuF3G"
+      APP_KEY: ${APP_KEY}
       APP_DEBUG: "true"
+
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: finora
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
+
+      CACHE_STORE: database
+      SESSION_DRIVER: database
       QUEUE_CONNECTION: database
+
       MAIL_MAILER: smtp
       MAIL_HOST: mailpit
       MAIL_PORT: 1025
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      MAIL_ENCRYPTION: ""
       MAIL_FROM_ADDRESS: finora@example.com
       MAIL_FROM_NAME: Finora
+
     depends_on:
       postgres:
         condition: service_healthy
       mailpit:
         condition: service_started
+      migrate:
+        condition: service_completed_successfully
+
     command: php artisan queue:work --tries=3
 
   scheduler:
@@ -72,40 +118,55 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: finora-scheduler
+
     environment:
       APP_ENV: local
-      APP_KEY: "base64:cicwMqd3A02evWhNoHY0ggKPPwpx3Pfh6D51GvuF3G"
+      APP_KEY: ${APP_KEY}
       APP_DEBUG: "true"
+
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: finora
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
+
+      CACHE_STORE: database
+      SESSION_DRIVER: database
       QUEUE_CONNECTION: database
+
       MAIL_MAILER: smtp
       MAIL_HOST: mailpit
       MAIL_PORT: 1025
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      MAIL_ENCRYPTION: ""
       MAIL_FROM_ADDRESS: finora@example.com
       MAIL_FROM_NAME: Finora
+
     depends_on:
-    postgres:
-      condition: service_healthy
-    app:
-      condition: service_started
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
     command: php artisan schedule:work
 
   postgres:
     image: postgres:17
     container_name: finora-postgres
+
     environment:
       POSTGRES_DB: finora
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+
     ports:
       - "5433:5432"
+
     volumes:
       - finora-postgres-data:/var/lib/postgresql/data
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d finora"]
       interval: 5s
@@ -115,6 +176,7 @@ services:
   mailpit:
     image: axllent/mailpit:latest
     container_name: finora-mailpit
+
     ports:
       - "8025:8025"
       - "1025:1025"

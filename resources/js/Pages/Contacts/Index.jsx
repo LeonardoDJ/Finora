@@ -79,7 +79,7 @@ function Index({ contacts, deleteError }) {
                 <div
                     style={{
                         display: 'grid',
-                        gridTemplateColumns: '2fr 1fr 1fr auto',
+                        gridTemplateColumns: '2fr 1fr 1fr',
                         gap: '12px',
                         alignItems: 'end',
                     }}
@@ -113,7 +113,13 @@ function Index({ contacts, deleteError }) {
                         </select>
                     </div>
 
-                    <button type="submit" className="rounded-xl bg-emerald-600 px-5 py-2.5 font-semibold text-white transition hover:bg-emerald-500 active:scale-95" >
+                </div>
+
+                <div className="mt-4">
+                    <button
+                        type="submit"
+                        className="rounded-xl bg-emerald-600 px-5 py-2.5 font-semibold text-white transition hover:bg-emerald-500 active:scale-95"
+                    >
                         Cadastrar
                     </button>
                 </div>
