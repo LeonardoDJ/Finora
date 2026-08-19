@@ -1,58 +1,583 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Finora
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema de controle de contas a pagar e receber desenvolvido como teste técnico.
 
-## About Laravel
+O Finora permite que cada usuário gerencie seus próprios contatos e lançamentos financeiros, acompanhe contas em aberto, vencidas e quitadas, receba avisos automáticos de vencimento e realize o fechamento de períodos financeiros.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+O projeto foi desenvolvido priorizando simplicidade, organização e cumprimento dos requisitos principais do desafio.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Tecnologias utilizadas
 
-## Learning Laravel
+### Back-end
+- PHP 8.3
+- Laravel
+- PostgreSQL
+- Laravel Queue
+- Laravel Scheduler
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Front-end
+- React
+- Inertia.js
+- Tailwind CSS
+- Vite
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Desenvolvimento e infraestrutura
+- Laragon
+- Composer
+- Node.js / NPM
+- Docker / Docker Compose
+- Mailpit para captura de e-mails no ambiente Docker
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## Funcionalidades
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### Autenticação
 
-```bash
-composer require laravel/boost --dev
+O sistema possui cadastro, login e logout de usuários.
 
-php artisan boost:install
+Os dados são isolados por usuário. Dessa forma, um usuário não pode visualizar, alterar ou excluir contatos e lançamentos pertencentes a outro usuário.
+
+### Contatos
+
+O usuário pode:
+
+- cadastrar clientes e fornecedores;
+- editar contatos;
+- excluir contatos;
+- classificar o contato como cliente ou fornecedor.
+
+Um contato que já possui lançamentos vinculados não pode ser excluído, evitando a perda de referência e mantendo a consistência do histórico financeiro.
+
+### Lançamentos
+
+O usuário pode cadastrar contas:
+
+- a pagar;
+- a receber.
+
+Cada lançamento possui:
+
+- contato relacionado;
+- tipo;
+- valor;
+- data de vencimento;
+- status;
+- data de liquidação, quando aplicável.
+
+Os principais estados são:
+
+- em aberto;
+- em atraso;
+- quitado.
+
+### Liquidação
+
+Um lançamento em aberto pode ser marcado como quitado.
+
+Ao realizar a liquidação, o sistema registra a data em que o pagamento ou recebimento foi realizado.
+
+### Visão financeira por período
+
+O sistema permite consultar os lançamentos de um período e visualizar informações consolidadas, como valores:
+
+- a pagar;
+- a receber;
+- liquidados;
+- vencidos.
+
+### Avisos automáticos de vencimento
+
+O Finora possui um processo automático responsável por verificar lançamentos próximos do vencimento.
+
+O Laravel Scheduler executa a verificação e os avisos são enviados por meio de Jobs processados pela fila.
+
+O sistema também mantém registro das notificações para evitar o envio duplicado do mesmo aviso.
+
+### Fechamento de período
+
+É possível solicitar o fechamento de um período financeiro.
+
+O processamento é executado de forma assíncrona por meio da fila.
+
+Ao finalizar, o sistema gera o resumo do período e realiza o envio por e-mail, incluindo o arquivo de fechamento.
+
+O status do fechamento permite acompanhar o resultado do processamento.
+
+---
+
+# Arquitetura e decisões técnicas
+
+## Laravel + React + Inertia
+
+Foi utilizado React integrado ao Laravel através do Inertia.js.
+
+A decisão foi tomada para manter a arquitetura simples e concentrar o desenvolvimento nas regras de negócio solicitadas pelo teste.
+
+Uma API REST separada adicionaria mais camadas e código de integração entre back-end e front-end. Para o escopo e o tempo disponível, o Inertia permitiu utilizar React mantendo o Laravel responsável pelas rotas, autenticação, validação e regras de negócio.
+
+A prioridade durante o desenvolvimento foi fazer o básico bem feito, evitando complexidade que não agregaria valor direto aos requisitos principais.
+
+---
+
+## PostgreSQL
+
+O PostgreSQL foi utilizado como banco de dados da aplicação.
+
+Durante o desenvolvimento local, o banco utilizado foi:
+
+```text
+finora
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+na porta padrão:
 
-## Contributing
+```text
+5432
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+As credenciais reais não são armazenadas no repositório.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Modelagem
 
-## Security Vulnerabilities
+A estrutura principal utiliza usuários, contatos e lançamentos.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Usuários
 
-## License
+Representam as pessoas que possuem acesso ao Finora.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Cada usuário possui seus próprios contatos e lançamentos.
+
+### Contatos
+
+Representam clientes ou fornecedores.
+
+Foi utilizada uma única entidade de contatos com um campo de tipo em vez de criar tabelas separadas para clientes e fornecedores.
+
+Essa decisão evita duplicação de estrutura e simplifica a modelagem.
+
+### Lançamentos
+
+Representam contas a pagar ou receber.
+
+Cada lançamento pertence a:
+
+- um usuário;
+- um contato.
+
+O relacionamento com o usuário permite aplicar o isolamento dos dados.
+
+### Relacionamentos principais
+
+```text
+User
+ ├── possui vários Contacts
+ └── possui várias Transactions
+
+Contact
+ └── pode possuir várias Transactions
+
+Transaction
+ ├── pertence a um User
+ └── pertence a um Contact
+```
+
+Também existem estruturas auxiliares utilizadas para os fechamentos de período e para o controle das notificações automáticas.
+
+---
+
+# Filas e processamento assíncrono
+
+O Finora utiliza o sistema de filas do Laravel.
+
+O Queue Worker é responsável por processar tarefas que não precisam bloquear a requisição principal, como:
+
+- envio de notificações;
+- processamento de fechamento;
+- envio dos resultados por e-mail.
+
+Para executar manualmente:
+
+```bash
+php artisan queue:work
+```
+
+---
+
+# Scheduler
+
+O Laravel Scheduler é utilizado para executar verificações automáticas de vencimentos.
+
+Durante o desenvolvimento, ele pode ser iniciado com:
+
+```bash
+php artisan schedule:work
+```
+
+O scheduler identifica os lançamentos que precisam gerar avisos e envia o processamento para a fila.
+
+Por isso, para testar todo o fluxo automático localmente, é necessário manter tanto o scheduler quanto o worker em execução.
+
+---
+
+# Executando o projeto localmente
+
+## Requisitos
+
+Para executar sem Docker:
+
+- PHP 8.3+
+- Composer
+- Node.js / NPM
+- PostgreSQL
+- extensão `pdo_pgsql` habilitada no PHP
+
+Clone o repositório e entre na pasta:
+
+```bash
+git clone https://github.com/LeonardoDJ/Finora.git
+cd Finora
+```
+
+Instale as dependências PHP:
+
+```bash
+composer install
+```
+
+Instale as dependências do front-end:
+
+```bash
+npm install
+```
+
+Crie o arquivo de ambiente:
+
+### Windows
+
+```bash
+copy .env.example .env
+```
+
+### Linux/macOS
+
+```bash
+cp .env.example .env
+```
+
+Gere a chave da aplicação:
+
+```bash
+php artisan key:generate
+```
+
+Configure no `.env` as credenciais do PostgreSQL.
+
+Exemplo:
+
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=finora
+DB_USERNAME=postgres
+DB_PASSWORD=sua_senha
+```
+
+Execute as migrations:
+
+```bash
+php artisan migrate
+```
+
+Inicie o Laravel:
+
+```bash
+php artisan serve
+```
+
+Em outro terminal, inicie o Vite:
+
+```bash
+npm run dev
+```
+
+Em outro terminal, inicie a fila:
+
+```bash
+php artisan queue:work
+```
+
+E em outro terminal, inicie o scheduler:
+
+```bash
+php artisan schedule:work
+```
+
+A aplicação estará disponível em:
+
+```text
+http://127.0.0.1:8000
+```
+
+---
+
+# Executando com Docker
+
+O projeto possui:
+
+- `Dockerfile`;
+- `docker-compose.yml`;
+- `.dockerignore`.
+
+A configuração disponibilizada cria os seguintes serviços:
+
+```text
+finora-app
+finora-postgres
+finora-worker
+finora-scheduler
+finora-mailpit
+```
+
+Para construir e iniciar:
+
+```bash
+docker compose up --build
+```
+
+Depois, acesse:
+
+### Finora
+
+```text
+http://localhost:8000
+```
+
+### Mailpit
+
+```text
+http://localhost:8025
+```
+
+O PostgreSQL do Docker utiliza internamente a porta `5432` e é exposto na máquina pela porta `5433`, evitando conflito com uma instalação local do PostgreSQL.
+
+> Observação: os arquivos Docker foram preparados para facilitar a reprodução do ambiente. No ambiente Windows utilizado durante o desenvolvimento, a execução completa via Docker não pôde ser validada devido a um problema local na instalação do WSL. A aplicação foi validada diretamente no ambiente local com Laragon, PHP e PostgreSQL.
+
+---
+
+# E-mails
+
+No ambiente Docker, os e-mails são direcionados ao Mailpit.
+
+A interface pode ser acessada em:
+
+```text
+http://localhost:8025
+```
+
+Isso permite testar os avisos e fechamentos sem utilizar credenciais reais de serviços externos.
+
+Durante o desenvolvimento local, também foi validado o envio SMTP para um endereço de e-mail real.
+
+---
+
+# Como testar os avisos automáticos
+
+Para testar o fluxo:
+
+1. mantenha o Queue Worker em execução:
+
+```bash
+php artisan queue:work
+```
+
+2. mantenha o Scheduler em execução:
+
+```bash
+php artisan schedule:work
+```
+
+3. crie um lançamento que atenda ao período de aviso configurado;
+
+4. aguarde a execução do scheduler;
+
+5. confira o e-mail gerado.
+
+O sistema registra as notificações já processadas para evitar duplicidade de avisos.
+
+---
+
+# Como testar o fechamento de período
+
+Na página de lançamentos:
+
+1. escolha o período desejado;
+2. solicite o fechamento;
+3. mantenha o Queue Worker em execução;
+4. acompanhe o processamento;
+5. confira o status do fechamento;
+6. verifique o e-mail e o arquivo gerado.
+
+---
+
+# Isolamento dos dados
+
+Uma das regras principais implementadas é o isolamento entre usuários.
+
+Consultas de contatos e lançamentos são associadas ao usuário autenticado.
+
+Além disso, operações sensíveis validam a propriedade do registro antes de permitir alterações.
+
+Dessa forma:
+
+```text
+Usuário A → dados do Usuário A
+Usuário B → dados do Usuário B
+```
+
+Um usuário não deve conseguir visualizar ou manipular os registros pertencentes a outro usuário.
+
+---
+
+# Consistência dos dados
+
+Algumas regras foram adicionadas para impedir estados inconsistentes.
+
+Um exemplo é a exclusão de contatos.
+
+Caso um contato possua lançamentos relacionados, sua exclusão é bloqueada e o usuário recebe uma mensagem explicando o motivo.
+
+Isso preserva o histórico financeiro e evita referências inválidas no banco.
+
+---
+
+# Problemas encontrados durante o desenvolvimento
+
+Alguns problemas de ambiente foram encontrados durante a implementação.
+
+### PostgreSQL não reconhecido no terminal
+
+O PostgreSQL estava instalado, mas o executável `psql` não estava disponível diretamente no PATH.
+
+A instalação foi validada utilizando o caminho completo do executável e o servidor foi verificado com `pg_isready`.
+
+### Driver PostgreSQL no PHP
+
+Inicialmente, as migrations retornavam:
+
+```text
+could not find driver
+```
+
+Foi necessário habilitar no `php.ini`:
+
+```ini
+extension=pdo_pgsql
+extension=pgsql
+```
+
+### Configuração antiga do banco
+
+Em determinado momento o Laravel ainda estava utilizando configurações anteriores.
+
+Após corrigir o `.env`, foi utilizado:
+
+```bash
+php artisan config:clear
+```
+
+para limpar a configuração em cache.
+
+### WSL / Docker
+
+Durante a preparação do ambiente Docker no Windows, o WSL apresentou erro de instalação relacionado a:
+
+```text
+Wsl/REGDB_E_CLASSNOTREG
+```
+
+Foram realizadas tentativas de reparo do ambiente Windows/WSL. Como o problema era externo ao código da aplicação, o desenvolvimento e os testes funcionais continuaram diretamente pelo ambiente local.
+
+Os arquivos de Docker foram mantidos no projeto para documentar e facilitar a execução da infraestrutura em um ambiente compatível.
+
+---
+
+# Ambiente utilizado durante o desenvolvimento
+
+```text
+Finora
+│
+├── Laravel / PHP 8.3
+├── React + Inertia
+├── Composer
+├── Node.js / NPM
+├── PostgreSQL
+├── Queue Worker
+└── Scheduler
+```
+
+O Laragon foi utilizado como ambiente local para facilitar o gerenciamento do PHP e do projeto.
+
+A escolha do Laragon em vez do XAMPP foi baseada principalmente na praticidade para o fluxo de desenvolvimento Laravel. O XAMPP também seria capaz de executar o projeto.
+
+---
+
+# Uso de Inteligência Artificial
+
+A Inteligência Artificial foi utilizada como ferramenta de apoio durante o desenvolvimento, e não como substituição da implementação e validação do projeto.
+
+Entre os usos realizados:
+
+- discussão e revisão da modelagem do banco;
+- análise da separação entre usuários e contatos;
+- discussão sobre onde armazenar determinadas informações, como e-mail;
+- explicações sobre Laravel, React, Inertia, filas e scheduler;
+- apoio na investigação de erros;
+- revisão de código e sugestões de melhorias;
+- apoio na documentação;
+- auxílio na configuração dos arquivos Docker.
+
+Um exemplo foi a discussão sobre a associação do e-mail. A decisão foi manter o e-mail do usuário responsável separado do lançamento, utilizando o relacionamento entre as entidades para obter o destinatário das notificações.
+
+Também foi discutida a diferença entre usuários e contatos. O usuário representa quem possui acesso ao sistema, enquanto os contatos representam clientes e fornecedores utilizados nos lançamentos.
+
+As sugestões fornecidas pela IA foram analisadas durante o desenvolvimento, e as decisões foram aplicadas e testadas no projeto.
+
+---
+
+# Decisões de escopo
+
+O desenvolvimento priorizou os requisitos principais do desafio.
+
+Por esse motivo, algumas possibilidades de evolução não foram priorizadas, como:
+
+- liquidação parcial;
+- API REST separada do front-end;
+- funcionalidades adicionais que não fossem necessárias para o fluxo principal.
+
+A opção foi manter uma solução menor, compreensível e funcional em vez de aumentar a complexidade apenas para adicionar recursos opcionais.
+
+---
+
+# Segurança
+
+O arquivo `.env` não é versionado.
+
+Credenciais reais do PostgreSQL e SMTP não devem ser adicionadas ao repositório.
+
+O arquivo `.env.example` contém apenas exemplos de configuração.
+
+As senhas dos usuários são tratadas pelo sistema de autenticação do Laravel.
+
+---
+
+# Autor
+
+**Leonardo Delfino José**
+
+Projeto desenvolvido como teste técnico para uma vaga de desenvolvimento.

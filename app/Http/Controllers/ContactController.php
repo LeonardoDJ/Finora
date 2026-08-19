@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Contact;
@@ -13,7 +15,8 @@ class ContactController extends Controller
         $contacts = Contact::where('user_id', Auth::id())->get();
 
         return Inertia::render("Contacts/Index", [
-            "contacts" => $contacts
+            "contacts" => $contacts,
+            "deleteError" => session('delete_error'),
         ]);
 
     }
@@ -37,6 +40,16 @@ class ContactController extends Controller
     public function destroy(Contact $contact){
         if ($contact->user_id !== Auth::id()) {
             abort(403);
+        }
+
+        $hasTransactions = Transaction::where('contact_id', $contact->id)
+            ->exists();
+
+        if ($hasTransactions) {
+            return redirect('/contatos')->with(
+                'delete_error',
+                'Este contato não pode ser excluído porque possui lançamentos vinculados.'
+            );
         }
 
         $contact->delete();

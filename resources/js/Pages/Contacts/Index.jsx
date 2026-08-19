@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { router } from '@inertiajs/react';
 import AppLayout from '../../Components/AppLayout';
 
-function Index({ contacts }) {
+function Index({ contacts, deleteError }) {
 
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -34,6 +34,35 @@ function Index({ contacts }) {
                     Gerencie seus clientes e fornecedores.
                 </p>
             </div>
+
+            {deleteError && (
+                <div className="mt-6 flex items-start gap-4 rounded-xl px-5 py-4"
+                    style={{
+                        backgroundColor: '#fef2f2',
+                        border: '1px solid #fca5a5',
+                        borderLeft: '5px solid #dc2626',
+                    }}
+                >
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-bold"
+                        style={{
+                            backgroundColor: '#fee2e2',
+                            color: '#dc2626',
+                        }}
+                    >
+                        !
+                    </div>
+
+                    <div>
+                        <p className="font-semibold" style={{ color: '#991b1b' }} >
+                            Não foi possível excluir o contato
+                        </p>
+
+                        <p className="mt-1 text-sm" style={{ color: '#b91c1c' }} >
+                            {deleteError}
+                        </p>
+                    </div>
+                </div>
+            )}
 
             <form onSubmit={handleSubmit} className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
             >
@@ -208,9 +237,13 @@ function Index({ contacts }) {
                                         </button>
 
                                         <button
-                                            onClick={() =>
-                                                router.delete(`/contatos/${contact.id}`)
-                                            }
+                                            onClick={() => {
+                                                if (!confirm('Deseja realmente excluir este contato?')) {
+                                                    return;
+                                                }
+
+                                                router.delete(`/contatos/${contact.id}`);
+                                            }}
                                             className="rounded-xl bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-100"
                                         >
                                             Excluir
