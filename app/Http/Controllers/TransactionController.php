@@ -68,6 +68,7 @@ class TransactionController extends Controller
             'transactions' => $transactions,
             'contacts' => $contacts,
             'periodClosures' => $periodClosures,
+            'success' => session('success'),
             
             'summary' => [
                 'total_receive' => $totalReceive,
@@ -104,7 +105,10 @@ class TransactionController extends Controller
             'settled_at' => null,
         ]);
 
-        return redirect('/lancamentos');
+        return redirect('/lancamentos')->with(
+            'success',
+            'Lançamento cadastrado com sucesso.'
+        );
     }
 
     public function settle(Transaction $transaction){
@@ -117,6 +121,9 @@ class TransactionController extends Controller
             'settled_at' => now(),
         ]);
 
-        return redirect('/lancamentos');
+        return redirect('/lancamentos')->with(
+            'success',
+            'Lançamento liquidado com sucesso.'
+        );
     }
 }

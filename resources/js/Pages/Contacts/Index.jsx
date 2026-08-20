@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { router } from '@inertiajs/react';
 import AppLayout from '../../Components/AppLayout';
 
-function Index({ contacts, deleteError, duplicateError }) {
+function Index({ contacts, deleteError, duplicateError, success }) {
 
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -34,6 +34,24 @@ function Index({ contacts, deleteError, duplicateError }) {
                     Gerencie seus clientes e fornecedores.
                 </p>
             </div>
+
+            {success && (
+                <div className="mb-6 flex items-center gap-3 rounded-xl px-5 py-4" style={{ backgroundColor: '#ecfdf5', order: '1px solid #a7f3d0', borderLeft: '5px solid #059669', }} >
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-bold" style={{ backgroundColor: '#d1fae5', color: '#059669', }} >
+                        ✓
+                    </div>
+
+                    <div>
+                        <p className="font-semibold" style={{ color: '#065f46' }} >
+                            Operação realizada com sucesso
+                        </p>
+
+                        <p className="mt-1 text-sm" style={{ color: '#047857' }} >
+                            {success}
+                        </p>
+                    </div>
+                </div>
+            )}
 
             {deleteError && (
                 <div className="mt-6 flex items-start gap-4 rounded-xl px-5 py-4"

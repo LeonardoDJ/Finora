@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { router } from '@inertiajs/react';
 import AppLayout from '../../Components/AppLayout';
 
-function Index({ transactions, contacts, summary, periodClosures }) {
+function Index({ transactions, contacts, summary, periodClosures, success }) {
     const [contactId, setContactId] = useState('');
     const [type, setType] = useState('');
     const [amount, setAmount] = useState('');
@@ -69,6 +69,24 @@ function Index({ transactions, contacts, summary, periodClosures }) {
                     Gerencie suas contas a pagar e receber.
                 </p>
             </div>
+
+            {success && (
+            <div className="mb-6 flex items-center gap-3 rounded-xl px-5 py-4" style={{ backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', borderLeft: '5px solid #059669',}}>
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-bold" style={{ backgroundColor: '#d1fae5', color: '#059669', }} >
+                    ✓
+                </div>
+
+                <div>
+                    <p className="font-semibold" style={{ color: '#065f46' }} >
+                        Operação realizada com sucesso
+                    </p>
+
+                    <p className="mt-1 text-sm" style={{ color: '#047857' }} >
+                        {success}
+                    </p>
+                </div>
+            </div>
+        )}
 
             <div className="mb-8">
                 <h2 className="mb-4 text-lg font-semibold text-slate-800">

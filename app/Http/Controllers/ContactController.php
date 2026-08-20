@@ -17,6 +17,7 @@ class ContactController extends Controller
             "contacts" => $contacts,
             "deleteError" => session('delete_error'),
             "duplicateError" => session('duplicate_error'),
+            "success" => session('success'),
         ]);
     }
 
@@ -48,7 +49,10 @@ class ContactController extends Controller
             'type' => $request->input('type'),
         ]);
 
-        return redirect('/contatos');
+        return redirect('/contatos')->with(
+            'success',
+            'Contato cadastrado com sucesso.'
+        );
     }
 
     public function destroy(Contact $contact){
@@ -67,6 +71,11 @@ class ContactController extends Controller
         }
 
         $contact->delete();
+
+        return redirect('/contatos')->with(
+            'success',
+            'Contato excluído com sucesso.'
+        );
 
         return redirect('/contatos');
     }
@@ -104,6 +113,9 @@ class ContactController extends Controller
             'type' => $request->input('type'),
         ]);
 
-        return redirect('/contatos');
+        return redirect('/contatos')->with(
+            'success',
+            'Contato atualizado com sucesso.'
+        );
     }
 }
