@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { router, usePage } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import AppLayout from '../../Components/AppLayout';
 
-function Index({ contacts, deleteError }) {
-    const { errors } = usePage().props;
+function Index({ contacts, deleteError, duplicateError }) {
 
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -77,9 +76,9 @@ function Index({ contacts, deleteError }) {
                     </p>
                 </div>
 
-                {errors?.duplicate && (
+                {duplicateError && (
                     <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-                        {errors.duplicate}
+                        {duplicateError}
                     </div>
                 )}
 

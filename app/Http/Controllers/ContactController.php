@@ -11,14 +11,13 @@ use Inertia\Inertia;
 class ContactController extends Controller
 {
     public function index(){
-
         $contacts = Contact::where('user_id', Auth::id())->get();
 
         return Inertia::render("Contacts/Index", [
             "contacts" => $contacts,
             "deleteError" => session('delete_error'),
+            "duplicateError" => session('duplicate_error'),
         ]);
-
     }
 
     public function store(Request $request){
@@ -36,9 +35,10 @@ class ContactController extends Controller
             ->exists();
 
         if ($existingContact) {
-            return redirect('/contatos')->withErrors([
-                'duplicate' => 'Já existe um contato cadastrado com este e-mail ou telefone.',
-            ]);
+            return redirect('/contatos')->with(
+                'duplicate_error',
+                'Já existe um contato cadastrado com este e-mail ou telefone.'
+            );
         }
 
         Contact::create([
@@ -92,9 +92,10 @@ class ContactController extends Controller
             ->exists();
 
         if ($existingContact) {
-            return redirect('/contatos')->withErrors([
-                'duplicate' => 'Já existe outro contato cadastrado com este e-mail ou telefone.',
-            ]);
+            return redirect('/contatos')->with(
+                'duplicate_error',
+                'Já existe outro contato cadastrado com este e-mail ou telefone.'
+            );
         }
 
         $contact->update([
