@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import AppLayout from '../../Components/AppLayout';
 
 function Index({ contacts, deleteError, duplicateError, success }) {
+
+    const { errors } = usePage().props;
 
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -36,7 +38,7 @@ function Index({ contacts, deleteError, duplicateError, success }) {
             </div>
 
             {success && (
-                <div className="mb-6 flex items-center gap-3 rounded-xl px-5 py-4" style={{ backgroundColor: '#ecfdf5', order: '1px solid #a7f3d0', borderLeft: '5px solid #059669', }} >
+                <div className="mb-6 flex items-center gap-3 rounded-xl px-5 py-4" style={{ backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', borderLeft: '5px solid #059669', }} >
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-bold" style={{ backgroundColor: '#d1fae5', color: '#059669', }} >
                         ✓
                     </div>
@@ -92,6 +94,28 @@ function Index({ contacts, deleteError, duplicateError, success }) {
                     <p className="mt-1 text-sm text-slate-500">
                         Cadastre um cliente ou fornecedor.
                     </p>
+
+                    {Object.keys(errors || {}).length > 0 && (
+                        <div
+                            className="mt-4 rounded-xl px-4 py-3 text-sm"
+                            style={{
+                                backgroundColor: '#fef2f2',
+                                border: '1px solid #fca5a5',
+                                borderLeft: '5px solid #dc2626',
+                                color: '#b91c1c',
+                            }}
+                        >
+                            <p className="font-semibold">
+                                Não foi possível salvar o contato
+                            </p>
+
+                            <ul className="mt-1 list-disc pl-5">
+                                {Object.values(errors).map((error, index) => (
+                                    <li key={index}>{error}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
 
                 {duplicateError && (

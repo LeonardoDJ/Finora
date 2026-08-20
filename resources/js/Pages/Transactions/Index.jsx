@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import AppLayout from '../../Components/AppLayout';
 
 function Index({ transactions, contacts, summary, periodClosures, success }) {
+
+    const { errors } = usePage().props;
+    
     const [contactId, setContactId] = useState('');
     const [type, setType] = useState('');
     const [amount, setAmount] = useState('');
