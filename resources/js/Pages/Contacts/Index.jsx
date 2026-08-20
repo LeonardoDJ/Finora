@@ -15,6 +15,20 @@ function Index({ contacts, deleteError, duplicateError, success }) {
     const [editPhone, setEditPhone] = useState('');
     const [editType, setEditType] = useState('');
 
+    const formatPhone = (value) => {
+        const numbers = value.replace(/\D/g, '').slice(0, 11);
+
+        if (numbers.length <= 2) {
+            return numbers;
+        }
+
+        if (numbers.length <= 7) {
+            return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+        }
+
+        return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7)}`;
+    };
+
     const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -145,7 +159,7 @@ function Index({ contacts, deleteError, duplicateError, success }) {
                             Telefone
                         </label>
 
-                        <input type="text" placeholder="(48) 99999-9999" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full rounded-xl border border-slate-300 px-3 py-2.5 outline-none transition focus:border-slate-900" />
+                        <input type="text" placeholder="(48) 99999-9999" value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} className="w-full rounded-xl border border-slate-300 px-3 py-2.5 outline-none transition focus:border-slate-900" />
                     </div>
 
                     <div>
@@ -216,7 +230,7 @@ function Index({ contacts, deleteError, duplicateError, success }) {
                                     >
                                         <input value={editEmail} onChange={(e) => setEditEmail(e.target.value)} className="rounded-xl border border-slate-300 px-3 py-2.5 outline-none focus:border-slate-900" />
 
-                                        <input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} className="rounded-xl border border-slate-300 px-3 py-2.5 outline-none focus:border-slate-900" />
+                                        <input value={editPhone} onChange={(e) => setEditPhone(formatPhone(e.target.value))} className="rounded-xl border border-slate-300 px-3 py-2.5 outline-none focus:border-slate-900" />
 
                                         <select value={editType} onChange={(e) => setEditType(e.target.value)} className="rounded-xl border border-slate-300 px-3 py-2.5 outline-none focus:border-slate-900"
                                         >
