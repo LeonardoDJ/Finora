@@ -23,7 +23,7 @@ class ContactController extends Controller
 
     public function store(Request $request){
         $request->validate([
-            'email'=> 'required|email|max:255',
+            'email' => 'required|email:rfc,dns|max:255',
             'phone'=> 'required|string|max:20',
             'type'=> 'required|in:cliente,fornecedor',
         ]);
@@ -87,7 +87,7 @@ class ContactController extends Controller
         }
 
         $request->validate([
-            'email' => 'required|email|max:255',
+            'email' => 'required|email:rfc,dns|max:255',
             'phone' => 'required|string|max:20',
             'type' => 'required|in:cliente,fornecedor',
         ]);

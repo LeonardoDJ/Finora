@@ -5,13 +5,20 @@ import AppLayout from '../../Components/AppLayout';
 function Index({ transactions, contacts, summary, periodClosures, success }) {
 
     const { errors } = usePage().props;
-    
+
     const [contactId, setContactId] = useState('');
     const [type, setType] = useState('');
     const [amount, setAmount] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+
+    const formatCurrency = (value) => {
+        return Number(value).toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+    };
 
     const handleFilter = () => {
         router.get( '/lancamentos', {
@@ -107,28 +114,28 @@ function Index({ transactions, contacts, summary, periodClosures, success }) {
                     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                         <p className="text-sm font-medium text-slate-500">A receber</p>
                         <p className="mt-2 text-2xl font-bold text-emerald-600">
-                            R$ {summary.total_receive}
+                            R$ {formatCurrency(summary.total_receive)}
                         </p>
                     </div>
 
                     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                         <p className="text-sm font-medium text-slate-500">A pagar</p>
                         <p className="mt-2 text-2xl font-bold text-slate-900">
-                            R$ {summary.total_pay}
+                            R$ {formatCurrency(summary.total_pay)}
                         </p>
                     </div>
 
                     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                         <p className="text-sm font-medium text-slate-500">Liquidado</p>
                         <p className="mt-2 text-2xl font-bold text-blue-600">
-                            R$ {summary.total_paid}
+                            R$ {formatCurrency(summary.total_paid)}
                         </p>
                     </div>
 
                     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                         <p className="text-sm font-medium text-slate-500">Vencido</p>
                         <p className="mt-2 text-2xl font-bold text-red-600">
-                            R$ {summary.total_overdue}
+                            R$ {formatCurrency(summary.total_overdue)}
                         </p>
                     </div>
                 </div>
@@ -409,7 +416,7 @@ function Index({ transactions, contacts, summary, periodClosures, success }) {
                                                 : 'text-slate-900'
                                         }`}
                                     >
-                                        R$ {transaction.amount}
+                                        R$ {formatCurrency(transaction.amount)}
                                     </p>
 
                                     <p className="mt-1 text-sm text-slate-500">
