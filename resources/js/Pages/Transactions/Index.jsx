@@ -38,7 +38,7 @@ function Index({ transactions, contacts, summary, periodClosures, success }) {
         router.post('/lancamentos', {
             contact_id: contactId,
             type: type,
-            amount: amount,
+            amount: moneyToNumber(amount),
             due_date: dueDate,
         });
     };
@@ -284,14 +284,7 @@ function Index({ transactions, contacts, summary, periodClosures, success }) {
                     </p>
                 </div>
 
-                <div
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: '2fr 1fr 1fr 1fr auto',
-                        gap: '12px',
-                        alignItems: 'end',
-                    }}
-                >
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr auto', gap: '12px', alignItems: 'end', }} >
                     <div>
                         <label className="mb-1 block text-sm font-medium text-slate-600">
                             Contato
@@ -325,7 +318,7 @@ function Index({ transactions, contacts, summary, periodClosures, success }) {
                             Valor
                         </label>
 
-                        <input type="number" step="0.01" placeholder="0,00" value={amount} onChange={(e) => setAmount(e.target.value)}
+                        <input type="number" step="0.01" placeholder="0,00" value={amount} onChange={(e) => setAmount(formatMoneyInput(e.target.value))}
                             className="w-full rounded-xl border border-slate-300 px-3 py-2.5 outline-none transition focus:border-slate-900"/>
                     </div>
 
